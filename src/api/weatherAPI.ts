@@ -1,0 +1,23 @@
+import axios from "axios";
+
+const API_URL = process.env.REACT_APP_API_URL;
+const API_KEY = process.env.REACT_APP_API_KEY;
+
+export const getWeather = async (latitude: number, longitude: number) => {
+  const { data } = await axios.get(
+    `${API_URL}/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
+  );
+
+  return data;
+};
+
+export const getWeatherForPeriod = async (
+  latitude: number,
+  longitude: number
+) => {
+  const { data } = await axios.get(
+    `${API_URL}/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
+  );
+
+  return data;
+};
