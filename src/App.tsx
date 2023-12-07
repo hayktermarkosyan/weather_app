@@ -4,25 +4,18 @@ import CitySelector from "./components/CitySelector";
 import { getWeather, getWeatherForPeriod } from "./api/weatherAPI";
 import WeatherTable from "./components/WeatherTable";
 import ForecastTable from "./components/ForecastTable";
-
-const currentLatitude = process.env.REACT_APP_CURRENT_LAT
-  ? +process.env.REACT_APP_CURRENT_LAT
-  : 0;
-const currentLongitude = process.env.REACT_APP_CURRENT_LON
-  ? +process.env.REACT_APP_CURRENT_LON
-  : 0;
+import { byIso } from "country-code-lookup";
 
 export const App = () => {
-  const [country, setCountry] = useState("Armenia");
-  const [city, setCity] = useState("Yerevan");
+  const [country, setCountry] = useState<string | undefined>();
+  const [city, setCity] = useState<string | undefined>();
   const [weatherData, setWeatherData] = useState<IWeatherData | undefined>();
   const [forecastData, setForecastData] = useState<Array<IForecastData>>([]);
 
   const getCurrentCityWeather = useCallback((lat: number, lon: number) => {
     getWeather(lat, lon).then((data) => {
       setWeatherData({
-        // eslint-disable-next-line no-useless-concat
-        temp: Math.round(data.main.temp - 273.15) + "\u00B0" + " C",
+        temp: `${Math.round(data.main.temp - 273.15) + "\u00B0"} C`,
         humidity: data.main.humidity + "%",
         windSpeed: Math.round(data.wind.speed * 3.6) + " km/h",
       });
@@ -36,8 +29,7 @@ export const App = () => {
             {
               date: forecast.dt_txt.split(" ")[0],
               time: forecast.dt_txt.split(" ")[1],
-              // eslint-disable-next-line no-useless-concat
-              temp: Math.round(forecast.main.temp - 273.15) + "\u00B0" + " C",
+              temp: `${Math.round(forecast.main.temp - 273.15) + "\u00B0"} C`,
             },
           ];
         })
@@ -46,31 +38,46 @@ export const App = () => {
   }, []);
 
   useEffect(() => {
-    getWeather(currentLatitude, currentLongitude).then((data) => {
-      setWeatherData({
-        // eslint-disable-next-line no-useless-concat
-        temp: Math.round(data.main.temp - 273.15) + "\u00B0" + " C",
-        humidity: data.main.humidity + "%",
-        windSpeed: Math.round(data.wind.speed * 3.6) + " km/h",
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        getWeather(position.coords.latitude, position.coords.longitude).then(
+          (data) => {
+            setCity(data.name);
+            setCountry(byIso(data.sys.country)?.country);
+            setWeatherData({
+              temp: `${Math.round(data.main.temp - 273.15) + "\u00B0"} C`,
+              humidity: data.main.humidity + "%",
+              windSpeed: Math.round(data.wind.speed * 3.6) + " km/h",
+            });
+          }
+        );
+        getWeatherForPeriod(
+          position.coords.latitude,
+          position.coords.longitude
+        ).then((data) => {
+          setForecastData([]);
+          data.list.map((forecast: any) =>
+            setForecastData((prevState) => {
+              return [
+                ...prevState,
+                {
+                  temp: `${
+                    Math.round(forecast.main.temp - 273.15) + "\u00B0"
+                  } C`,
+                  date: forecast.dt_txt.split(" ")[0],
+                  time: forecast.dt_txt.split(" ")[1],
+                },
+              ];
+            })
+          );
+        });
       });
-    });
-    getWeatherForPeriod(currentLatitude, currentLongitude).then((data) => {
-      setForecastData([]);
-      data.list.map((forecast: any) =>
-        setForecastData((prevState) => {
-          return [
-            ...prevState,
-            {
-              date: forecast.dt_txt.split(" ")[0],
-              time: forecast.dt_txt.split(" ")[1],
-              // eslint-disable-next-line no-useless-concat
-              temp: Math.round(forecast.main.temp - 273.15) + "\u00B0" + " C",
-            },
-          ];
-        })
-      );
-    });
+    } else {
+      console.log("Geolocation is not available in your browser.");
+    }
   }, []);
+
+  console.log();
 
   return (
     <ChakraProvider theme={theme}>

@@ -9,8 +9,8 @@ import "react-country-state-city/dist/react-country-state-city.css";
 
 interface CitySelectorProps {
   getCurrentCityWeather: (lat: number, lon: number) => void;
-  setCountry: React.Dispatch<React.SetStateAction<string>>;
-  setCity: React.Dispatch<React.SetStateAction<string>>;
+  setCountry: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setCity: React.Dispatch<React.SetStateAction<string | undefined>>;
   setForecastData: React.Dispatch<React.SetStateAction<IForecastData[]>>;
 }
 

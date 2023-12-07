@@ -31,7 +31,7 @@ const WeatherTable = ({ city, country, weatherData }: WeatherTableProps) => {
         ml={{ base: "0", md: "25%" }}
         w={{ base: "100%", md: "50%" }}
       >
-        <Table size="sm" variant={"striped"}>
+        <Table size="sm">
           <Thead>
             <Tr>
               <Th px="2px">Temperature</Th>
