@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { useState, memo } from "react";
 import {
   CitySelect,
@@ -24,38 +24,40 @@ const CitySelector = ({
   const [stateId, setStateId] = useState(0);
 
   return (
-    <Box w={"20%"}>
-      <h6>Country</h6>
-      <CountrySelect
-        onChange={(e: any) => {
-          setForecastData([]);
-          setCountryId(0);
-          setStateId(0);
-          setCity("");
-          setCountryId(e.id);
-          setCountry(e.name);
-        }}
-        placeHolder="Select Country"
-      />
-      <h6>State</h6>
-      <StateSelect
-        countryid={countryId}
-        onChange={(e: any) => {
-          setStateId(e.id);
-        }}
-        placeHolder="Select State"
-      />
-      <h6>City</h6>
-      <CitySelect
-        countryid={countryId}
-        stateid={stateId}
-        onChange={(e: any) => {
-          getCurrentCityWeather(e.latitude, e.longitude);
-          setCity(e.name);
-        }}
-        placeHolder="Select City"
-      />
-    </Box>
+    <Flex w={{ base: "100%", xl: "20%" }}>
+      <Box w={"100%"}>
+        <h6>Country</h6>
+        <CountrySelect
+          onChange={(e: any) => {
+            setForecastData([]);
+            setCountryId(0);
+            setStateId(0);
+            setCity("");
+            setCountryId(e.id);
+            setCountry(e.name);
+          }}
+          placeHolder="Select Country"
+        />
+        <h6 style={{ marginTop: "25px" }}>State</h6>
+        <StateSelect
+          countryid={countryId}
+          onChange={(e: any) => {
+            setStateId(e.id);
+          }}
+          placeHolder="Select State"
+        />
+        <h6 style={{ marginTop: "25px" }}>City</h6>
+        <CitySelect
+          countryid={countryId}
+          stateid={stateId}
+          onChange={(e: any) => {
+            getCurrentCityWeather(e.latitude, e.longitude);
+            setCity(e.name);
+          }}
+          placeHolder="Select City"
+        />
+      </Box>
+    </Flex>
   );
 };
 

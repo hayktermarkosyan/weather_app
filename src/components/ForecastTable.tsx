@@ -41,12 +41,12 @@ const ForecastTable = ({ forecastData }: WeatherTableProps) => {
     });
   }, [forecastData]);
   return (
-    <Box ml={"10%"} w={"70%"}>
+    <Box textAlign={"center"} mt={"5%"}>
       <Heading mt={"2%"} fontSize={"medium"}>
         5 day forecast
       </Heading>
       <TableContainer mt={"2%"} w={"100%"}>
-        <Table size={"sm"}>
+        <Table size={"sm"} variant={"striped"}>
           <Thead>
             <Tr>
               <Th>Date / Time</Th>
