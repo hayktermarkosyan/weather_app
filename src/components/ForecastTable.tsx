@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Heading,
   Table,
   TableContainer,
   Tbody,
@@ -41,44 +39,39 @@ const ForecastTable = ({ forecastData }: WeatherTableProps) => {
     });
   }, [forecastData]);
   return (
-    <Box textAlign={"center"} mt={"5%"}>
-      <Heading mt={"2%"} fontSize={"medium"}>
-        5 day forecast
-      </Heading>
-      <TableContainer mt={"2%"} w={"100%"}>
-        <Table size={"sm"} variant={"striped"}>
-          <Thead>
-            <Tr>
-              <Th>Date / Time</Th>
-              {timePeriods.map((period, i) => (
-                <Th key={i}>{period}</Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {dates.map((date, index) => {
-              return (
-                <Tr key={index}>
-                  <Td>{date}</Td>
-                  {timePeriods.map((period, i) => {
-                    const element = forecastData.filter(
-                      (forecast) =>
-                        forecast.time === period && forecast.date === date
-                    )[0];
+    <TableContainer mt={"2%"} w={"100%"}>
+      <Table size={"sm"} variant={"striped"}>
+        <Thead>
+          <Tr>
+            <Th>Date / Time</Th>
+            {timePeriods.map((period, i) => (
+              <Th key={i}>{period}</Th>
+            ))}
+          </Tr>
+        </Thead>
+        <Tbody>
+          {dates.map((date, index) => {
+            return (
+              <Tr key={index}>
+                <Td>{date}</Td>
+                {timePeriods.map((period, i) => {
+                  const element = forecastData.filter(
+                    (forecast) =>
+                      forecast.time === period && forecast.date === date
+                  )[0];
 
-                    if (element) {
-                      return <Td key={i}>{element.temp}</Td>;
-                    } else {
-                      return <Td key={i}>-</Td>;
-                    }
-                  })}
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
-      </TableContainer>
-    </Box>
+                  if (element) {
+                    return <Td key={i}>{element.temp}</Td>;
+                  } else {
+                    return <Td key={i}>-</Td>;
+                  }
+                })}
+              </Tr>
+            );
+          })}
+        </Tbody>
+      </Table>
+    </TableContainer>
   );
 };
 

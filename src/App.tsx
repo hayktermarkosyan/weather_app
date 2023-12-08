@@ -1,10 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
-import { Box, ChakraProvider, Flex, Heading, theme } from "@chakra-ui/react";
+import {
+  Box,
+  ChakraProvider,
+  Flex,
+  Heading,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  theme,
+} from "@chakra-ui/react";
 import CitySelector from "./components/CitySelector";
 import { getWeather, getWeatherForPeriod } from "./api/weatherAPI";
 import WeatherTable from "./components/WeatherTable";
 import ForecastTable from "./components/ForecastTable";
 import { byIso } from "country-code-lookup";
+import ForecastChart from "./components/ForecastChart";
 
 export const App = () => {
   const [country, setCountry] = useState<string | undefined>();
@@ -77,8 +89,6 @@ export const App = () => {
     }
   }, []);
 
-  console.log();
-
   return (
     <ChakraProvider theme={theme}>
       <Flex p={"5%"} flexDir={{ base: "column", xl: "row" }}>
@@ -105,7 +115,30 @@ export const App = () => {
             </Box>
           )}
           {forecastData.length > 0 && (
-            <ForecastTable forecastData={forecastData} />
+            <Box textAlign={"center"} mt={"5%"}>
+              <Heading mt={"2%"} fontSize={"medium"}>
+                5 day forecast
+              </Heading>
+              <Tabs
+                mt={"2%"}
+                isFitted
+                variant="enclosed"
+                colorScheme={"whatsapp"}
+              >
+                <TabList mb="1em">
+                  <Tab>Forecast Table</Tab>
+                  <Tab>Forecast Chart</Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel>
+                    <ForecastTable forecastData={forecastData} />
+                  </TabPanel>
+                  <TabPanel>
+                    <ForecastChart forecastData={forecastData} />
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </Box>
           )}
         </Box>
       </Flex>
