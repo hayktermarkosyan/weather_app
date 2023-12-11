@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Chart from "chart.js/auto";
 import { CategoryScale } from "chart.js";
 import { Line } from "react-chartjs-2";
@@ -10,23 +10,28 @@ interface WeatherChartProps {
 }
 
 const ForecastChart = ({ forecastData }: WeatherChartProps) => {
-  const chartData = {
-    labels: forecastData.map(
-      (forecast) =>
-        `${forecast.date.split("-")[2]}.${forecast.date.split("-")[1]} ${
-          forecast.time.split(":")[0]
-        }.${forecast.time.split(":")[1]}`
-    ),
-    datasets: [
-      {
-        label: "",
-        data: forecastData.map((forecast) => +forecast.temp.split("\u00B0")[0]),
-        backgroundColor: ["yellow", "red", "blue", "orange", "purple"],
-        borderColor: "green",
-        borderWidth: 2,
-      },
-    ],
-  };
+  const chartData = useMemo(
+    () => ({
+      labels: forecastData.map(
+        (forecast) =>
+          `${forecast.date.split("-")[2]}.${forecast.date.split("-")[1]} ${
+            forecast.time.split(":")[0]
+          }.${forecast.time.split(":")[1]}`
+      ),
+      datasets: [
+        {
+          label: "",
+          data: forecastData.map(
+            (forecast) => +forecast.temp.split("\u00B0")[0]
+          ),
+          backgroundColor: ["yellow", "red", "blue", "orange", "purple"],
+          borderColor: "green",
+          borderWidth: 2,
+        },
+      ],
+    }),
+    [forecastData]
+  );
 
   return (
     <>

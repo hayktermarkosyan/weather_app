@@ -30,7 +30,6 @@ const CitySelector = ({
         <CountrySelect
           onChange={(e: any) => {
             setForecastData([]);
-            setCountryId(0);
             setStateId(0);
             setCity("");
             setCountryId(e.id);

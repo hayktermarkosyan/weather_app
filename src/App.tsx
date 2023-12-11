@@ -24,69 +24,63 @@ export const App = () => {
   const [weatherData, setWeatherData] = useState<IWeatherData | undefined>();
   const [forecastData, setForecastData] = useState<Array<IForecastData>>([]);
 
-  const getCurrentCityWeather = useCallback((lat: number, lon: number) => {
-    getWeather(lat, lon).then((data) => {
+  const getCurrentCityWeather = useCallback(
+    async (lat: number, lon: number) => {
+      const currentWeather = await getWeather(lat, lon);
       setWeatherData({
-        temp: `${Math.round(data.main.temp - 273.15) + "\u00B0"} C`,
-        humidity: data.main.humidity + "%",
-        windSpeed: Math.round(data.wind.speed * 3.6) + " km/h",
+        temp: `${Math.round(currentWeather.main.temp - 273.15) + "\u00B0"} C`,
+        humidity: currentWeather.main.humidity + "%",
+        windSpeed: Math.round(currentWeather.wind.speed * 3.6) + " km/h",
       });
-    });
-    getWeatherForPeriod(lat, lon).then((data) => {
       setForecastData([]);
-      data.list.map((forecast: any) =>
-        setForecastData((prevState) => {
-          return [
-            ...prevState,
-            {
-              date: forecast.dt_txt.split(" ")[0],
-              time: forecast.dt_txt.split(" ")[1],
-              temp: `${Math.round(forecast.main.temp - 273.15) + "\u00B0"} C`,
-            },
-          ];
-        })
-      );
-    });
-  }, []);
-
-  useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        getWeather(position.coords.latitude, position.coords.longitude).then(
-          (data) => {
-            setCity(data.name);
-            setCountry(byIso(data.sys.country)?.country);
-            setWeatherData({
-              temp: `${Math.round(data.main.temp - 273.15) + "\u00B0"} C`,
-              humidity: data.main.humidity + "%",
-              windSpeed: Math.round(data.wind.speed * 3.6) + " km/h",
-            });
-          }
-        );
-        getWeatherForPeriod(
-          position.coords.latitude,
-          position.coords.longitude
-        ).then((data) => {
-          setForecastData([]);
-          data.list.map((forecast: any) =>
-            setForecastData((prevState) => {
-              return [
-                ...prevState,
-                {
-                  temp: `${
-                    Math.round(forecast.main.temp - 273.15) + "\u00B0"
-                  } C`,
-                  date: forecast.dt_txt.split(" ")[0],
-                  time: forecast.dt_txt.split(" ")[1],
-                },
-              ];
-            })
-          );
+      const forecastForPeriod = await getWeatherForPeriod(lat, lon);
+      const forecastDataArr: any[] = [];
+      forecastForPeriod.list.forEach((forecast: any) => {
+        forecastDataArr.push({
+          date: forecast.dt_txt.split(" ")[0],
+          time: forecast.dt_txt.split(" ")[1],
+          temp: `${Math.round(forecast.main.temp - 273.15) + "\u00B0"} C`,
         });
       });
-    } else {
+      setForecastData(forecastDataArr);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!("geolocation" in navigator)) {
       console.log("Geolocation is not available in your browser.");
+      return;
     }
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const currentWeather = await getWeather(
+        position.coords.latitude,
+        position.coords.longitude
+      );
+      setCity(currentWeather.name);
+      setCountry(byIso(currentWeather.sys.country)?.country);
+      setWeatherData({
+        temp: `${Math.round(currentWeather.main.temp - 273.15) + "\u00B0"} C`,
+        humidity: currentWeather.main.humidity + "%",
+        windSpeed: Math.round(currentWeather.wind.speed * 3.6) + " km/h",
+      });
+
+      setForecastData([]);
+      const forecastForPeriod = await getWeatherForPeriod(
+        position.coords.latitude,
+        position.coords.longitude
+      );
+      const forecastDataArr: any[] = [];
+      forecastForPeriod.list.forEach((forecast: any) => {
+        forecastDataArr.push({
+          date: forecast.dt_txt.split(" ")[0],
+          time: forecast.dt_txt.split(" ")[1],
+          temp: `${Math.round(forecast.main.temp - 273.15) + "\u00B0"} C`,
+        });
+      });
+      setForecastData(forecastDataArr);
+    });
   }, []);
 
   return (

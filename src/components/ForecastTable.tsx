@@ -28,15 +28,13 @@ const ForecastTable = ({ forecastData }: WeatherTableProps) => {
   const [dates, setDates] = useState<string[]>([]);
 
   useEffect(() => {
+    const datesSet = new Set();
     setDates([]);
-    forecastData?.map((forecast, index) => {
-      if (forecast.date !== forecastData[index - 1]?.date) {
-        setDates((prevState: string[]) => {
-          return [...prevState, forecast.date];
-        });
-      }
-      return null;
+    forecastData?.forEach((forecast, index) => {
+      if (forecast.date !== forecastData[index - 1]?.date)
+        datesSet.add(forecast.date);
     });
+    setDates(Array.from(datesSet) as string[]);
   }, [forecastData]);
   return (
     <TableContainer mt={"2%"} w={"100%"}>
